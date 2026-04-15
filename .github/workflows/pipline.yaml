@@ -31,12 +31,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Simulated Training Job
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
         run: |
-          echo "Starting expensive GPU training..."
-          echo "Training model..."
-          sleep 5
-          echo "Training complete"
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run training script
+        run: |
+          echo "Starting training..."
+          python train.py
 
       - name: Upload Error Logs if Training Fails
         if: failure()
