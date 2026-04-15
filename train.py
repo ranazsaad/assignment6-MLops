@@ -1,3 +1,5 @@
 print("Hello world")
 print ("hellooo")
-raise Exception("error happpened")
+
+if True:
+  raise Exception("error happpened")
