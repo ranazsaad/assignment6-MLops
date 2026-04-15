@@ -41,10 +41,13 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Run training script
+      - name: Run training script (capture logs)
         run: |
-          echo "Starting training..."
-          python train.py
+          echo "Starting training..." | tee error_logs.txt
+          python train.py >> error_logs.txt 2>&1 || (
+            echo "Training failed" >> error_logs.txt
+            exit 1
+          )
 
       - name: Upload Error Logs if Training Fails
         if: failure()
