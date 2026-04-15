@@ -1,0 +1,50 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - "**"
+
+jobs:
+
+  linter:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run linter
+        run: |
+          echo "Running lightweight lint checks..."
+          echo "Lint passed"
+
+  train:
+    needs: linter
+    runs-on: ubuntu-latest
+
+    if: >
+      github.ref == 'refs/heads/main' &&
+      contains(github.event.head_commit.message, '[run-train]')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Simulated Training Job
+        run: |
+          echo "Starting expensive GPU training..."
+          echo "Training model..."
+          sleep 5
+          echo "Training complete"
+
+      - name: Upload Error Logs if Training Fails
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: error_logs
+          path: error_logs.txt
+
+      - name: Cleanup Cloud Resources
+        if: always()
+        run: echo "Cleaning up temporary cloud volumes..."
